@@ -1,0 +1,6 @@
+vendor/appengine
+vendor/github.com
+vendor/google.golang.org
+vendor/appengine_internal
+vendor/cloud.google.com
+vendor/golang.org
