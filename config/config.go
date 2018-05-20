@@ -9,18 +9,21 @@ import (
 	"context"
 	"net/http"
 	"io/ioutil"
+	"golang.org/x/oauth2/google"
 )
+
+type configFunc func([]byte) (*oauth2.Config, error)
 
 
 // Retrieve a token, saves the token, then returns the generated client.
-func NewClient(filename string, configFunc func([]byte)(*oauth2.Config, error)) (*http.Client, error) {
+func NewClient(filename string, confFunc configFunc) (*http.Client, error) {
 	b, err := ioutil.ReadFile("client_secret.json")
 	if err != nil {
 		log.Printf("Unable to read client secret file: %v", err)
 		return nil, err
 	}
 
-	conf, err := configFunc(b)
+	conf, err := confFunc(b)
 	if err != nil {
 		return nil, err
 	}
@@ -80,4 +83,20 @@ func getClient(config *oauth2.Config) *http.Client {
 		saveToken(tokFile, tok)
 	}
 	return config.Client(context.Background(), tok)
+}
+
+func ReadOnlyConfigFunc(b []byte) (*oauth2.Config, error) {
+	conf, err := google.ConfigFromJSON(b, "https://www.googleapis.com/auth/spreadsheets.readonly")
+	if err != nil {
+		return nil, err
+	}
+	return conf, nil
+}
+
+func ReadWriteConfigFunc(b []byte) (*oauth2.Config, error) {
+	conf, err := google.ConfigFromJSON(b, "https://www.googleapis.com/auth/spreadsheets")
+	if err != nil {
+		return nil, err
+	}
+	return conf, nil
 }

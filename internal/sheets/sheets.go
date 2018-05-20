@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"encoding/csv"
 	"io"
+	"google.golang.org/api/sheets/v4"
 )
 
 const sheetIDPath = "./sheetids.csv" // current directory
@@ -15,13 +16,13 @@ var (
 	notImplementedError = errors.New("not implemented yet")
 )
 
-type monthSheetId map[string]string
+type cacheSheetIDs map[string]string
 
-func (id monthSheetId) set(month, sheetId string) {
+func (id cacheSheetIDs) set(month, sheetId string) {
 	id[month] = sheetId
 }
 
-func (id monthSheetId) get(filename string) (sheetId string, err error) {
+func (id cacheSheetIDs) get(filename string) (sheetId string, err error) {
 	sheetId, ok := id[filename]
 	if !ok {
 		return "", errors.New("not found filename's spreadsheet ID")
@@ -29,15 +30,15 @@ func (id monthSheetId) get(filename string) (sheetId string, err error) {
 	return sheetId, nil
 }
 
-type MonthSheetID struct {
-	mutex sync.Mutex
-	monthSheetId monthSheetId
-	sheetIdPath string
+type CacheSheetIDs struct {
+	mutex         sync.Mutex
+	cacheSheetIds cacheSheetIDs
+	sheetIdPath   string
 }
 
-func (s *MonthSheetID) SetSheetId(mo, id string) error {
-	if s.monthSheetId == nil {
-		s.monthSheetId = make(monthSheetId)
+func (s *CacheSheetIDs) SetSheetId(mo, id string) error {
+	if s.cacheSheetIds == nil {
+		s.cacheSheetIds = make(cacheSheetIDs)
 	}
 
 	err := s.storeSheetId(mo, id)
@@ -47,17 +48,17 @@ func (s *MonthSheetID) SetSheetId(mo, id string) error {
 
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	s.monthSheetId.set(mo, id)
+	s.cacheSheetIds.set(mo, id)
 
 	return nil
 }
 
-func (s *MonthSheetID) GetSheetId(filename string) string {
-	id, _ := s.monthSheetId.get(filename)
+func (s *CacheSheetIDs) GetSheetId(filename string) string {
+	id, _ := s.cacheSheetIds.get(filename)
 	return id
 }
 
-func (s *MonthSheetID) loadSheetIds() error {
+func (s *CacheSheetIDs) loadSheetIds() error {
 	file, err := os.OpenFile(sheetIDPath, os.O_APPEND|os.O_RDWR, 0664)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -67,7 +68,7 @@ func (s *MonthSheetID) loadSheetIds() error {
 	}
 	defer file.Close()
 
-	s.monthSheetId = make(monthSheetId)
+	s.cacheSheetIds = make(cacheSheetIDs)
 
 	reader := csv.NewReader(file)
 	reader.FieldsPerRecord = -1
@@ -84,13 +85,13 @@ func (s *MonthSheetID) loadSheetIds() error {
 			return err
 		}
 
-		s.monthSheetId[rows[monthIndex]] = rows[sheetIdIndex]
+		s.cacheSheetIds[rows[monthIndex]] = rows[sheetIdIndex]
 	}
 
 	return nil
 }
 
-func (s *MonthSheetID) storeSheetId(mo, id string) error {
+func (s *CacheSheetIDs) storeSheetId(mo, id string) error {
 
 	file, err := os.OpenFile(s.sheetIdPath, os.O_APPEND|os.O_RDWR, 0664)
 	if err != nil {
@@ -114,3 +115,6 @@ func (s *MonthSheetID) storeSheetId(mo, id string) error {
 	return nil
 }
 
+type SpreadSheet struct {
+	spreadSheet *sheets.Spreadsheet
+}

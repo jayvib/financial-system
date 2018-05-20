@@ -18,7 +18,7 @@ func TestNewSheet(t *testing.T) {
 }
 
 func TestMonthSheetID(t *testing.T) {
-	sheetIds := MonthSheetID{sheetIdPath:sheetIDPath}
+	sheetIds := CacheSheetIDs{sheetIdPath:sheetIDPath}
 
 	t.Run("loadSheetIds", func(t *testing.T){
 		t.Skip()
@@ -27,16 +27,16 @@ func TestMonthSheetID(t *testing.T) {
 			t.Error(err)
 		}
 
-		if len(sheetIds.monthSheetId) == 0 {
+		if len(sheetIds.cacheSheetIds) == 0 {
 			t.Error("sheet IDs must not be zero")
 		}
 
-		if len(sheetIds.monthSheetId) != 3 {
-			t.Errorf("expecting the items of the sheetIds.monthSheetId to be 3 but got %d\n", len(sheetIds.monthSheetId))
+		if len(sheetIds.cacheSheetIds) != 3 {
+			t.Errorf("expecting the items of the sheetIds.cacheSheetIds to be 3 but got %d\n", len(sheetIds.cacheSheetIds))
 		}
 
 		tw := tabwriter.NewWriter(os.Stderr, 0, 0, 3, ' ', tabwriter.AlignRight|tabwriter.Debug)
-		for mo, id := range sheetIds.monthSheetId {
+		for mo, id := range sheetIds.cacheSheetIds {
 			fmt.Fprintf(tw, "%s\t%s", mo, id)
 		}
 	})
@@ -53,8 +53,8 @@ func TestMonthSheetID(t *testing.T) {
 			t.Error(err)
 		}
 
-		if len(sheetIds.monthSheetId) != 4 {
-			t.Errorf("expecting the items of the sheetIds.monthSheetId to be 4 but got %d\n", len(sheetIds.monthSheetId))
+		if len(sheetIds.cacheSheetIds) != 4 {
+			t.Errorf("expecting the items of the sheetIds.cacheSheetIds to be 4 but got %d\n", len(sheetIds.cacheSheetIds))
 		}
 	})
 }
