@@ -57,3 +57,6 @@ func (s *Service) SetValues(range_ string, vr *sheets.ValueRange) error {
 	return nil
 }
 
+func (s *Service) TotalExpenses() (string, error) {
+	val, err := s.GetValues()
+}
