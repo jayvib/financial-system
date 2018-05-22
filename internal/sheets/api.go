@@ -77,3 +77,34 @@ func (s *Service) GetDayExpense(day string) (string, error) {
 	res, _ := convert.InterfaceToString(v[0][0])
 	return res, nil
 }
+
+func (s *Service) SetBreakFastExpense(day string, val interface{}) error {
+	range_ := parseToRange(day, BreakfastRange)
+	vr := &sheets.ValueRange{Values: [][]interface{}{{val}}}
+	return s.SetValues(range_, vr)
+}
+
+func (s *Service) SetLunchExpense(day string, val interface{}) error {
+	range_ := parseToRange(day, LunchRange)
+	vr := &sheets.ValueRange{Values: [][]interface{}{{val}}}
+	return s.SetValues(range_, vr)
+}
+
+func (s *Service) SetDinnerExpense(day string, val interface{}) error {
+	range_ := parseToRange(day, DinnerRange)
+	vr := &sheets.ValueRange{Values: [][]interface{}{{val}}}
+	return s.SetValues(range_, vr)
+}
+
+func (s *Service) SetTransportationExpense(day string, val interface{}) error {
+	range_ := parseToRange(day, TransportRange)
+	vr := &sheets.ValueRange{Values: [][]interface{}{{val}}}
+	return s.SetValues(range_, vr)
+}
+
+func (s *Service) SetOtherExpense(day string, val interface{}) error {
+	range_ := parseToRange(day, OtherRange)
+	vr := &sheets.ValueRange{Values: [][]interface{}{{val}}}
+	return s.SetValues(range_, vr)
+}
+

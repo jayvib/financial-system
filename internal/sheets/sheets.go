@@ -10,7 +10,7 @@ import (
 	"google.golang.org/api/sheets/v4"
 )
 
-const sheetIDPath = "./sheetids.csv" // current directory
+const sheetIDPath = "sheetids.csv" // current directory
 
 var (
 	notImplementedError = errors.New("not implemented yet")
@@ -115,6 +115,24 @@ func (s *CacheSheetIDs) storeSheetId(mo, id string) error {
 	return nil
 }
 
+func (s *CacheSheetIDs) GetAllSheetIDs() map[string]string {
+	return s.cacheSheetIds
+}
+
 type SpreadSheet struct {
 	spreadSheet *sheets.Spreadsheet
+}
+
+func LoadSheetIDs() (*CacheSheetIDs, error) {
+	sheetIds := &CacheSheetIDs{
+		cacheSheetIds: (cacheSheetIDs)(nil),
+		sheetIdPath: sheetIDPath,
+	}
+
+	err := sheetIds.loadSheetIds()
+	if err != nil {
+		return nil, err
+	}
+
+	return sheetIds, nil
 }
