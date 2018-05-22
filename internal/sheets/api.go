@@ -3,7 +3,8 @@ package sheets
 import (
 	"net/http"
 	"google.golang.org/api/sheets/v4"
-	"github.com/pkg/errors"
+	"errors"
+	"financial-system/internal/util/convert"
 )
 
 
@@ -58,5 +59,21 @@ func (s *Service) SetValues(range_ string, vr *sheets.ValueRange) error {
 }
 
 func (s *Service) TotalExpenses() (string, error) {
-	val, err := s.GetValues()
+	val, err := s.GetValues(SummaryRange)
+	if err != nil {
+		return "", err
+	}
+
+	return val[0][0].(string), nil
+}
+
+func (s *Service) GetDayExpense(day string) (string, error) {
+	range_ := parseToRange(day, TotalDailyExp)
+	v, err := s.getValues(range_)
+	if err != nil {
+		return "", err
+	}
+
+	res, _ := convert.InterfaceToString(v[0][0])
+	return res, nil
 }

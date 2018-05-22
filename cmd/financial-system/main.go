@@ -30,4 +30,12 @@ func main() {
 
 	totalExp := resp[0][0]
 	fmt.Println(totalExp)
+
+	// feb 1 total expense
+	expFeb1, err := service.GetDayExpense(fssheets.SecondDay)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Februaru 1 2018 Total Expense:", expFeb1)
 }

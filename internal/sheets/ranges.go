@@ -9,12 +9,12 @@ const (
 	DinnerRange    = "E7"
 	OtherRange     = "E8"
 	TransportRange = "E9"
-	DailyExpTotal  = "F10"
+	TotalDailyExp  = "F10"
 
 	// TODO: Fill up sequence 1-30
 	//Prefix Daily Sheetname
-	FirstDay = iota
-	SecondDay
+	FirstDay = "1"
+	SecondDay = "2"
 	ThirdDay
 	FourthDay
 	FifthDay
