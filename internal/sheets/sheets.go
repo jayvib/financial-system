@@ -1,13 +1,13 @@
 package sheets
 
 import (
-	"errors"
-	"sync"
-	"os"
-	"fmt"
 	"encoding/csv"
-	"io"
+	"errors"
+	"fmt"
 	"google.golang.org/api/sheets/v4"
+	"io"
+	"os"
+	"sync"
 )
 
 const sheetIDPath = "sheetids.csv" // current directory
@@ -126,7 +126,7 @@ type SpreadSheet struct {
 func LoadSheetIDs() (*CacheSheetIDs, error) {
 	sheetIds := &CacheSheetIDs{
 		cacheSheetIds: (cacheSheetIDs)(nil),
-		sheetIdPath: sheetIDPath,
+		sheetIdPath:   sheetIDPath,
 	}
 
 	err := sheetIds.loadSheetIds()

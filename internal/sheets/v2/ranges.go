@@ -1,7 +1,17 @@
 package sheets
 
+type expense int
+type day string
+
 const (
 	SummaryRange = "Summary!G9"
+
+	// Meal Flags
+	Lunch           = 0
+	Breakfast       = 1
+	Dinner          = 2
+	Others          = 3
+	Transportation  = 4
 
 	// Daily Range
 	BreakfastRange = "E5"
@@ -20,8 +30,8 @@ const (
 
 	// TODO: Fill up sequence 1-30
 	//Prefix Daily Sheetname
-	FirstDay  = "1"
-	SecondDay = "2"
+	FirstDay   = "1"
+	SecondDay  = "2"
 	ThirdDay
 	FourthDay
 	FifthDay

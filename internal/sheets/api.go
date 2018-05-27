@@ -1,15 +1,14 @@
 package sheets
 
 import (
-	"net/http"
-	"google.golang.org/api/sheets/v4"
 	"errors"
 	"financial-system/internal/util/convert"
+	"google.golang.org/api/sheets/v4"
+	"net/http"
 )
 
-
 type Service struct {
-	service       *sheets.Service
+	service        *sheets.Service
 	title, sheetId string
 }
 
@@ -19,9 +18,9 @@ func New(client *http.Client, title, sheetId string) (service *Service, err erro
 		return nil, err
 	}
 
-	service =  &Service{
+	service = &Service{
 		service: servc,
-		title: title,
+		title:   title,
 		sheetId: sheetId,
 	}
 	return service, nil
@@ -108,3 +107,20 @@ func (s *Service) SetOtherExpense(day string, val interface{}) error {
 	return s.SetValues(range_, vr)
 }
 
+func (s *Service) GetFirstHalfExpense() (string, error) {
+	range_ := parseToRange(SUMMARY_SHEET, FIRST_HALF_MONTH_EXPENSE)
+	val, err := s.GetValues(range_)
+	if err != nil {
+		return "", err
+	}
+	return val[0][0].(string), nil
+}
+
+func (s *Service) GetSecondHalfExpense() (string, error) {
+	range_ := parseToRange(SUMMARY_SHEET, SECOND_HALF_MONTH_EXPENSE)
+	val, err := s.GetValues(range_)
+	if err != nil {
+		return "", err
+	}
+	return val[0][0].(string), nil
+}

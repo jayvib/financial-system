@@ -1,23 +1,26 @@
 package config
 
 import (
-	"golang.org/x/oauth2"
-	"fmt"
-	"log"
-	"os"
-	"encoding/json"
 	"context"
-	"net/http"
-	"io/ioutil"
+	"encoding/json"
+	"fmt"
+	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 )
+
+const Client_secret_path = "C:/Users/jayson.vibandor/Documents/projects/go/src/financial-system/api/client_secret_path.json"
+const Token_path = "C:/Users/jayson.vibandor/Documents/projects/go/src/financial-system/api/token_path.json"
 
 type configFunc func([]byte) (*oauth2.Config, error)
 
-
-// Retrieve a token, saves the token, then returns the generated client.
-func NewClient(filename string, confFunc configFunc) (*http.Client, error) {
-	b, err := ioutil.ReadFile("client_secret.json")
+// Retrieve a Token_path, saves the Token_path, then returns the generated client.
+func NewClient(reader io.Reader, confFunc configFunc) (*http.Client, error) {
+	b, err := ioutil.ReadAll(reader)
 	if err != nil {
 		log.Printf("Unable to read client secret file: %v", err)
 		return nil, err
@@ -32,10 +35,18 @@ func NewClient(filename string, confFunc configFunc) (*http.Client, error) {
 	return client, nil
 }
 
+func DefaultClient() (*http.Client, error) {
+	file, err := os.Open(Client_secret_path)
+	if err != nil {
+		return nil, err
+	}
 
-// Request a token from the web, then returns the retrieved token.
+	return NewClient(file, ReadOnlyConfigFunc)
+}
+
+// Request a Token_path from the web, then returns the retrieved Token_path.
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
-	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	authURL := config.AuthCodeURL("state-Token_path", oauth2.AccessTypeOffline)
 	fmt.Printf("Go to the following link in your browser then type the "+
 		"authorization code: \n%v\n", authURL)
 
@@ -46,12 +57,12 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 
 	tok, err := config.Exchange(context.Background(), authCode)
 	if err != nil {
-		log.Fatalf("Unable to retrieve token from web: %v", err)
+		log.Fatalf("Unable to retrieve Token_path from web: %v", err)
 	}
 	return tok
 }
 
-// Retrieves a token from a local file.
+// Retrieves a Token_path from a local file.
 func tokenFromFile(file string) (*oauth2.Token, error) {
 	f, err := os.Open(file)
 	defer f.Close()
@@ -63,20 +74,20 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 	return tok, err
 }
 
-// Saves a token to a file path.
+// Saves a Token_path to a file path.
 func saveToken(path string, token *oauth2.Token) {
 	fmt.Printf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	defer f.Close()
 	if err != nil {
-		log.Fatalf("Unable to cache oauth token: %v", err)
+		log.Fatalf("Unable to cache oauth Token_path: %v", err)
 	}
 	json.NewEncoder(f).Encode(token)
 }
 
-// Retrieve a token, saves the token, then returns the generated client.
+// Retrieve a Token_path, saves the Token_path, then returns the generated client.
 func getClient(config *oauth2.Config) *http.Client {
-	tokFile := "token.json"
+	tokFile := Token_path
 	tok, err := tokenFromFile(tokFile)
 	if err != nil {
 		tok = getTokenFromWeb(config)

@@ -1,12 +1,12 @@
 package main
 
 import (
+	"financial-system/config"
 	"fmt"
-	"log"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/sheets/v4"
-	"financial-system/config"
+	"log"
 )
 
 const configFile = "client_secret.json"
