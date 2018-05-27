@@ -16,7 +16,7 @@ type Getter interface {
 }
 
 type GetSheetIDProvider interface {
-	GetSheetID() string
+	SheetIDProvider
 	Getter
 }
 

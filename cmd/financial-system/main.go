@@ -39,4 +39,10 @@ func main() {
 	}
 
 	fmt.Println(dayExpense)
+	expRange, err := sheets.ExpenseRangeProvider(sheets.SecondDay, sheets.Breakfast)
+	fmt.Println(expRange.ProvideAddress())
+
+	vr := sheets.NewValueRange(1000)
+
+	err = sheets.SetDayExpense(sheetService, expRange, vr)
 }
