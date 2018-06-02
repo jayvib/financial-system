@@ -10,3 +10,4 @@ type FoodExpense struct {
 func (fe *FoodExpense) Total() int {
 	return fe.Breakfast + fe.Lunch + fe.Dinner + fe.Others
 }
+

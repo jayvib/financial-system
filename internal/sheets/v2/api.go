@@ -140,6 +140,11 @@ func (de *DayExpense) String() string {
 }
 
 func (de *DayExpense) parse(data [][]interface{}) error {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("There's an expense that don't have value.")
+		}
+	}()
 	breakfastIndex := 1
 	lunchIndex     := 2
 	dinnerIndex    := 3
