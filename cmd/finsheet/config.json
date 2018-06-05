@@ -1,0 +1,7 @@
+{
+  "path": {
+    "token_file_path": "token_path",
+    "client_secret_path": "C:/Users/jayson.vibandor/Documents/projects/go/src/financial-system/cmd/finsheet/client_secret.json",
+  "sheet_ids_path": "C:/Users/jayson.vibandor/Documents/projects/go/src/financial-system/cmd/finsheet/sheetids.csv"
+}
+}

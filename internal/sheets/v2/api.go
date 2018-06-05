@@ -8,6 +8,7 @@ import (
 	"text/tabwriter"
 	"fmt"
 	"strings"
+	"financial-system/config"
 )
 
 const (
@@ -49,29 +50,19 @@ type ValueGetterSetter struct {
 
 type SpreadsheetService struct {
 	SetGetter
-	Service *sheets.Service
+	service   *sheets.Service
 	SheetInfo SheetInfo
 }
 
-func NewSpreadsheetService(client *http.Client, sheetId string, opts ...func(service *SpreadsheetService)) (*SpreadsheetService, error) {
+func New(client *http.Client, sheetId string, opts ...func(service *SpreadsheetService)) (*SpreadsheetService, error) {
 	service, err := sheets.New(client)
 	if err != nil {
 		return nil, err
 	}
 
-	vgs := &ValueGetterSetter{
-		Setter: &ValueSetter{
-			service: service,
-		},
-		Getter: &ValueGetter{
-			service: service,
-		},
-	}
-
 	spreadsheetService := &SpreadsheetService{
-		vgs,
-		service,
-		SheetInfo{
+		service: service,
+		SheetInfo: SheetInfo{
 			SheetId: sheetId,
 		},
 	}
@@ -83,12 +74,35 @@ func NewSpreadsheetService(client *http.Client, sheetId string, opts ...func(ser
 	return spreadsheetService, nil
 }
 
+// TODO: Create a default service
+func Default() (*SpreadsheetService, error) {
+	_, err := config.DefaultClient()
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (s *SpreadsheetService) Set(range_ string, sheetId string, valueRange *sheets.ValueRange) error {
+	sheetUpdateCall := s.service.Spreadsheets.Values.Update(sheetId, range_, valueRange).ValueInputOption(VALUE_OPTION_USER_ENTERED)
+	_, err := sheetUpdateCall.Do()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *SpreadsheetService) Get(range_ string, sheetId string) (*sheets.ValueRange, error) {
+	return s.service.Spreadsheets.Values.Get(sheetId, range_).Do()
+}
+
 func (s *SpreadsheetService) GetValue(range_ string) (*sheets.ValueRange, error) {
-	return s.SetGetter.Get(range_, s.SheetInfo.SheetId)
+	return s.Get(range_, s.SheetInfo.SheetId)
 }
 
 func (s *SpreadsheetService) SetValue(range_ string, valueRange *sheets.ValueRange) error {
-	return s.SetGetter.Set(range_, s.SheetInfo.SheetId, valueRange)
+	return s.Set(range_, s.SheetInfo.SheetId, valueRange)
 }
 
 func (s *SpreadsheetService) ProvideSheetID() string {
@@ -115,6 +129,31 @@ func SetDayExpense(setter SetSheetIDProvider, rp SheetRangeProvider, valueRange 
 	return setter.Set(rp.ProvideAddress(), setter.ProvideSheetID(), valueRange)
 }
 
+func OverallExpenseSummary(setter SetSheetIDProvider, rp SheetRangeProvider) error {
+	return notImplementedErr
+}
+
+func DailyExpenseSummary(setter SetSheetIDProvider, rp SheetRangeProvider) error {
+	return notImplementedErr
+}
+
+func ExtraSavings(setter SetSheetIDProvider, rp SheetRangeProvider) error {
+	return notImplementedErr
+}
+
+func HalfExpenditure(setter SetSheetIDProvider, rp SheetRangeProvider) error {
+	return notImplementedErr
+}
+
+func FixedExpenses(setter SetSheetIDProvider, rp SheetRangeProvider) error {
+	return notImplementedErr
+}
+
+func SetFixedExpense(setter SetSheetIDProvider, rp SheetRangeProvider) error {
+	return notImplementedErr
+}
+
+
 type DayExpense struct {
 	FoodExpense FoodExpense
 	Transportation int
@@ -132,6 +171,7 @@ func (de *DayExpense) String() string {
 	fmt.Fprintf(tabWriter, "\tBFast\tPhp%d\n", de.FoodExpense.Breakfast)
 	fmt.Fprintf(tabWriter, "\tLunch\tPhp%d\n", de.FoodExpense.Lunch)
 	fmt.Fprintf(tabWriter, "\tDinner\tPhp%d\n", de.FoodExpense.Dinner)
+	fmt.Fprintf(tabWriter, "\tOthers\tPhp%d\n", de.FoodExpense.Others)
 	fmt.Fprintln(tabWriter, "Transpo\t--------------------")
 	fmt.Fprintf(tabWriter, "\tTranspo\tPhp%d\n", de.Transportation)
 	fmt.Fprintf(tabWriter, "\t\t\tPhp%d", de.Total())

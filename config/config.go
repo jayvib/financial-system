@@ -13,8 +13,6 @@ import (
 	"os"
 )
 
-const Client_secret_path = "C:/Users/jayson.vibandor/Documents/projects/go/src/financial-system/api/client_secret_path.json"
-const Token_path = "C:/Users/jayson.vibandor/Documents/projects/go/src/financial-system/api/token_path.json"
 
 type configFunc func([]byte) (*oauth2.Config, error)
 
@@ -36,12 +34,16 @@ func NewClient(reader io.Reader, confFunc configFunc) (*http.Client, error) {
 }
 
 func DefaultClient() (*http.Client, error) {
-	file, err := os.Open(Client_secret_path)
+	conf, err := DefaultConfig()
+	if err != nil {
+		return nil, err
+	}
+	file, err := os.Open(conf.Path.ClientSecret)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewClient(file, ReadOnlyConfigFunc)
+	return NewClient(file, ReadWriteConfigFunc)
 }
 
 // Request a Token_path from the web, then returns the retrieved Token_path.
@@ -87,11 +89,11 @@ func saveToken(path string, token *oauth2.Token) {
 
 // Retrieve a Token_path, saves the Token_path, then returns the generated client.
 func getClient(config *oauth2.Config) *http.Client {
-	tokFile := Token_path
-	tok, err := tokenFromFile(tokFile)
+	conf, _ := DefaultConfig()
+	tok, err := tokenFromFile(conf.Path.TokenFile)
 	if err != nil {
 		tok = getTokenFromWeb(config)
-		saveToken(tokFile, tok)
+		saveToken(conf.Path.TokenFile, tok)
 	}
 	return config.Client(context.Background(), tok)
 }

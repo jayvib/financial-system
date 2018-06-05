@@ -7,11 +7,11 @@ const (
 	SummaryRange = "Summary!G9"
 
 	// Meal Flags
-	Lunch           = 0
 	Breakfast       = 1
-	Dinner          = 2
-	Others          = 3
-	Transportation  = 4
+	Lunch           = 2
+	Dinner          = 3
+	Others          = 4
+	Transportation  = 5
 
 	// Daily Range
 	BreakfastRange = "E5"
