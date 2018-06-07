@@ -7,11 +7,27 @@ import (
 	"isell/encoding/csv"
 	"io"
 	"strings"
+	"sync"
 )
 
 var (
 	notImplementedError = errors.New("not implemented yet")
 )
+
+type sheetInfo struct {
+	title string
+	id string
+}
+
+type SheetInfoCache struct {
+	sheetinfos map[string]sheetInfo
+}
+
+type sheetInfoLoader struct {
+	load func() map[string]string
+	sync.Once
+}
+
 
 var sheetIDs SheetIDs
 
