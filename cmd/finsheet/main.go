@@ -1,17 +1,31 @@
 package main
 
 import (
-	"os"
 	"log"
-	fcli "financial-system/internal/cli"
+	"financial-system/infrastructure/sheets"
+	"fmt"
 )
 
 func main() {
-	app := fcli.NewApp(fcli.FlagInitializer)
-	fcli.FlagInitializer(app)
-	fcli.ActionInitializer(app)
 
-	if err := app.Run(os.Args); err != nil {
+	sheetIds, err := sheets.LoadSheetIDs()
+	if err != nil {
 		log.Fatal(err)
 	}
+
+	id, err := sheetIds.Get("june")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sheetService, err := sheets.Default(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	exp, err := sheetService.GetDayExpense(2)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(exp)
 }

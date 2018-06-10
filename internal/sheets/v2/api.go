@@ -8,7 +8,7 @@ import (
 	"text/tabwriter"
 	"fmt"
 	"strings"
-	"financial-system/config"
+	"financial-system/client"
 )
 
 const (
@@ -76,7 +76,7 @@ func New(client *http.Client, sheetId string, opts ...func(service *SpreadsheetS
 
 // TODO: Create a default service
 func Default() (*SpreadsheetService, error) {
-	_, err := config.DefaultClient()
+	_, err := client.DefaultClient()
 	if err != nil {
 		return nil, err
 	}

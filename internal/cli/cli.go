@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"financial-system/internal/sheets/v2"
-	"financial-system/config"
+	"financial-system/client"
 )
 
 var (
@@ -51,7 +51,7 @@ func ActionInitializer(a *App) {
 		if err != nil {
 			return errors.Wrap(err, "error while loading the sheet IDs")
 		}
-		cl, err := config.DefaultClient()
+		cl, err := client.DefaultClient()
 		if err != nil {
 			return errors.Wrap(err, "error while initializing default client")
 		}
