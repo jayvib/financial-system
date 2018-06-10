@@ -17,14 +17,16 @@ func (fe *foodExpense) Total() int {
 	return fe.breakfast + fe.lunch + fe.dinner + fe.others
 }
 
+// dayExpense is a module level structure that will help to parse the raw value range into a day expense
+// object.
 type dayExpense struct {
 	foodExpense    foodExpense
 	transportation int
 }
 
-func (de *dayExpense) parse(data [][]interface{}) error {
+func (de *dayExpense) parse(data [][]interface{}) (err error) {
 	defer func() {
-		if err := recover(); err != nil {
+		if _err := recover(); _err != nil {
 			fmt.Println("There's an expense that don't have value.")
 		}
 	}()

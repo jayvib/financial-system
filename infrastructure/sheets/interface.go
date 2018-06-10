@@ -32,8 +32,8 @@ type SheetIDProvider interface {
 	ProvideSheetID() string
 }
 
-type SheetRangeProvider interface {
-	ProvideAddress() string
+type sheetRanger interface {
+	rangeAddress() string
 }
 
 type neutralizer interface {

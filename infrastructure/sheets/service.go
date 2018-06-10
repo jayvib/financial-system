@@ -3,6 +3,7 @@ package sheets
 import (
 	"financial-system/domain"
 	"errors"
+	ferror "financial-system/errors"
 	"google.golang.org/api/sheets/v4"
 	"net/http"
 	"financial-system/client"
@@ -46,8 +47,32 @@ type SheetService struct {
 }
 
 func (s *SheetService) GetDayExpense(day int) (*domain.DayExpense, error) {
-	rp := DayExpenseRangeProvider(strconv.Itoa(day))
-	return nil, notImplementedErr
+	rp := newDayExpenseRanger(strconv.Itoa(day))
+	vr, err := s.getValue(rp.rangeAddress())
+	if err != nil {
+		ferror.Wrapf(err, "finsheet/sheets: fail getting the value")
+	}
+	de := new(dayExpense)
+
+	err = de.parse(vr.Values)
+	if err != nil {
+		return nil, ferror.Wrapf(err, "finsheet/sheets: fail parsing the value range into day expense")
+	}
+
+	return de.toDayExpense(), nil
+}
+
+func (s *SheetService) SetDayExpense(exp *domain.Expense) error {
+	vr := newValueRange(exp.GetValue())
+	ranger, err := expenseRange(strconv.Itoa(exp.GetDay()), exp.GetName())
+	if err != nil {
+		return err
+	}
+	err = s.setValue(ranger.rangeAddress(), vr)
+	if err != nil {
+		return ferror.Wrapf(err, "finsheet/sheets: fail setting value to the google spreadsheet")
+	}
+	return nil
 }
 
 func (s *SheetService) GetFixedExpenses() (*domain.FixedExpenses, error) {
@@ -56,10 +81,6 @@ func (s *SheetService) GetFixedExpenses() (*domain.FixedExpenses, error) {
 
 func (s *SheetService) GetMiscExpenses() (*domain.MiscExpenses, error) {
 	return nil, notImplementedErr
-}
-
-func (s *SheetService) SetDayExpense(exp *domain.Expense) error {
-	return notImplementedErr
 }
 
 type service struct {
@@ -88,8 +109,8 @@ func (s *service) setValue(range_ string, valueRange *sheets.ValueRange) error {
 	return s.set(range_, s.sheetInfo.sheetId, valueRange)
 }
 
-func GetDayExpense(getter GetSheetIDProvider, rp SheetRangeProvider) (*domain.DayExpense, error) {
-	vr, err := getter.Get(rp.ProvideAddress(), getter.ProvideSheetID())
+func getDayExpense(getter GetSheetIDProvider, rp sheetRanger) (*domain.DayExpense, error) {
+	vr, err := getter.Get(rp.rangeAddress(), getter.ProvideSheetID())
 	if err != nil {
 		return nil, err
 	}
@@ -102,6 +123,6 @@ func GetDayExpense(getter GetSheetIDProvider, rp SheetRangeProvider) (*domain.Da
 	return dde, nil
 }
 
-func SetDayExpense(setter SetSheetIDProvider, rp SheetRangeProvider, valueRange *sheets.ValueRange) error {
-	return setter.Set(rp.ProvideAddress(), setter.ProvideSheetID(), valueRange)
+func setDayExpense(setter SetSheetIDProvider, rp sheetRanger, valueRange *sheets.ValueRange) error {
+	return setter.Set(rp.rangeAddress(), setter.ProvideSheetID(), valueRange)
 }

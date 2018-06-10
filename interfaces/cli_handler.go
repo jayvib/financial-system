@@ -15,8 +15,8 @@ type FinanceRepo struct {
 	storage FinanceHandler
 }
 
-func (f *FinanceRepo) GetDayExpense(expense *domain.DayExpense) (*domain.DayExpense, error) {
-	return nil, notImplementedErr
+func (f *FinanceRepo) GetDayExpense(day int) (*domain.DayExpense, error) {
+	return f.storage.GetDayExpense(day)
 }
 
 func (f *FinanceRepo) GetFixedExpense() (*domain.FixedExpenses, error) {
@@ -27,7 +27,12 @@ func (f *FinanceRepo) GetMiscExpense() (*domain.MiscExpenses, error) {
 	return nil, notImplementedErr
 }
 
-func (f *FinanceRepo) SetDayExpense(expense *domain.DayExpense) error {
-	return notImplementedErr
+func (f *FinanceRepo) SetExpense(expense *domain.Expense) error {
+	return f.storage.SetDayExpense(expense)
 }
 
+func NewFinanceRepo(storage FinanceHandler) *FinanceRepo {
+	return &FinanceRepo{
+		storage: storage,
+	}
+}

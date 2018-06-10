@@ -13,14 +13,14 @@ type SheetRange struct {
 	To        string
 }
 
-func (s *SheetRange) ProvideAddress() string {
+func (s *SheetRange) rangeAddress() string {
 	if s.To == "" {
 		return  s.SheetName + "!" + s.From
 	}
 	return s.SheetName + "!" + s.From + ":" + s.To
 }
 
-func DayExpenseRangeProvider(day string) SheetRangeProvider {
+func newDayExpenseRanger(day string) sheetRanger {
 	return &SheetRange{
 		SheetName: day,
 		From: "C4",
@@ -28,9 +28,9 @@ func DayExpenseRangeProvider(day string) SheetRangeProvider {
 	}
 }
 
-func ExpenseRangeProvider(sheetname string, expense int) (SheetRangeProvider, error) {
+func expenseRange(sheetname string, expense string) (sheetRanger, error) {
 	sr := new(SheetRange)
-	switch expense {
+	switch strings.ToLower(expense) {
 	case Lunch:
 		sr.SheetName = sheetname
 		sr.From = LunchRange
